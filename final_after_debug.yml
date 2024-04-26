@@ -1,0 +1,84 @@
+- name: Install necessary packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - htop
+    - tree
+    - python3
+    - apache2
+
+- name: Update system (Debian)
+  package:
+    name: update
+    state: latest
+  when: ansible_os_family == "Debian"
+
+- name: Install htop (Debian)
+  package:
+    name: htop
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install tree (Debian)
+  package:
+    name: tree
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install python3 (Debian)
+  package:
+    name: python3
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install Apache/httpd (Debian)
+  package:
+    name: apache2
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Update system (RedHat)
+  package:
+    name: update
+    state: latest
+  when: ansible_os_family == "RedHat"
+
+- name: Install htop (RedHat)
+  package:
+    name: htop
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Install tree (RedHat)
+  package:
+    name: tree
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Install python3 (RedHat)
+  package:
+    name: python3
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Install Apache/httpd (RedHat)
+  package:
+    name: httpd
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Copy files to hosts
+  copy:
+    src: files/
+    dest: ./folder
+
+- name: Count RedHat and Debian hosts
+  set_fact:
+    redhat_count: "{{ groups['all'] | map('extract', hostvars, ['ansible_os_family']) | list | count('RedHat') }}"
+    debian_count: "{{ groups['all'] | map('extract', hostvars, ['ansible_os_family']) | list | count('Debian') }}"
+  run_once: true
+
+- name: Print count of RedHat and Debian hosts
+  debug:
+    msg: "RedHat: {{ redhat_count }}, Debian: {{ debian_count }}"

@@ -1,0 +1,44 @@
+- name: Copy file 1.txt to host
+  copy:
+    src: ./files/1.txt
+    dest: /home/ubuntu/anisble_folder
+
+- name: Print message 3 times and OS family of host
+  debug:
+    msg: "{{ msg }}"
+  loop:
+    - "hello one "
+    - "hello two "
+    - "hello three"
+
+  loop_control:
+    label: "{{ item }}"
+  register: debug_output
+
+- name: Create text variable and print it
+  set_fact:
+    text_variable: "osher's variable"
+  register: text_variable_output
+
+- name: Print OS family of host
+  debug:
+    msg: "OS Family: {{ ansible_facts['os_family'] }}"
+
+- name: Save host IP in log.txt on master
+  delegate_to: localhost
+  lineinfile:
+    path: /home/ubuntu/anisble_folder/log.txt
+    line: "{{ ansible_host }}"
+  register: save_host_ip_output
+
+- name: Reboot host
+  delegate_to: "{{ inventory_hostname }}"
+  reboot:
+  register: reboot_output
+
+- name: Save time of host reboot in log.txt
+  delegate_to: localhost
+  lineinfile:
+    path: /path/to/log.txt
+    line: "{{ ansible_date_time.epoch }}"
+  when: reboot_output.changed
